@@ -1,0 +1,101 @@
+account_id,account_name,industry,country,company_size_band,owner_id,created_at
+acc_001,Company 001,Logistics,PL,1-10,owner_03,2023-09-08
+acc_002,Company 002,FinTech,PL,1-10,owner_01,2024-03-08
+acc_003,Company 003,SaaS,PL,1-10,owner_02,2023-08-27
+acc_004,Company 004,EdTech,PL,501+,owner_02,2024-03-05
+acc_005,Company 005,FinTech,SE,501+,owner_03,2023-01-07
+acc_006,Company 006,HR Tech,PL,201-500,owner_03,2023-10-12
+acc_007,Company 007,FinTech,DE,51-200,owner_01,2023-04-05
+acc_008,Company 008,HealthTech,PL,51-200,owner_03,2023-09-28
+acc_009,Company 009,HR Tech,PL,201-500,owner_01,2024-01-23
+acc_010,Company 010,SaaS,NL,501+,owner_03,2023-07-16
+acc_011,Company 011,Logistics,PL,1-10,owner_02,2023-10-24
+acc_012,Company 012,SaaS,DE,1-10,owner_04,2023-10-12
+acc_013,Company 013,HealthTech,UK,11-50,owner_03,2023-12-30
+acc_014,Company 014,FinTech,NL,1-10,owner_02,2024-06-30
+acc_015,Company 015,Logistics,DE,11-50,owner_04,2024-01-24
+acc_016,Company 016,eCommerce,DE,51-200,owner_01,2023-08-23
+acc_017,Company 017,HR Tech,PL,51-200,owner_04,2023-10-02
+acc_018,Company 018,SaaS,DE,501+,owner_03,2023-08-06
+acc_019,Company 019,Logistics,SE,201-500,owner_04,2023-05-27
+acc_020,Company 020,eCommerce,PL,11-50,owner_03,2024-03-14
+acc_021,Company 021,EdTech,CZ,51-200,owner_02,2023-05-22
+acc_022,Company 022,EdTech,SE,1-10,owner_01,2023-04-23
+acc_023,Company 023,FinTech,PL,201-500,owner_01,2024-01-30
+acc_024,Company 024,HealthTech,SE,501+,owner_03,2023-01-12
+acc_025,Company 025,Logistics,PL,501+,owner_03,2023-12-15
+acc_026,Company 026,SaaS,NL,201-500,owner_02,2024-04-09
+acc_027,Company 027,SaaS,NL,501+,owner_02,2024-06-03
+acc_028,Company 028,SaaS,NL,501+,owner_02,2023-06-06
+acc_029,Company 029,eCommerce,PL,501+,owner_01,2023-11-28
+acc_030,Company 030,HealthTech,PL,1-10,owner_03,2023-11-11
+acc_031,Company 031,FinTech,PL,11-50,owner_01,2023-03-29
+acc_032,Company 032,Logistics,SE,1-10,owner_02,2023-05-12
+acc_033,Company 033,Logistics,SE,501+,owner_02,2023-09-29
+acc_034,Company 034,EdTech,CZ,11-50,owner_02,2023-11-16
+acc_035,Company 035,HealthTech,UK,201-500,owner_04,2023-05-04
+acc_036,Company 036,FinTech,DE,1-10,owner_03,2023-01-22
+acc_037,Company 037,EdTech,DE,501+,owner_02,2023-01-08
+acc_038,Company 038,SaaS,PL,11-50,owner_01,2023-02-02
+acc_039,Company 039,HR Tech,UK,1-10,owner_02,2023-10-13
+acc_040,Company 040,Logistics,SE,11-50,owner_02,2024-04-29
+acc_041,Company 041,FinTech,SE,201-500,owner_02,2023-04-07
+acc_042,Company 042,SaaS,CZ,51-200,owner_04,2024-02-25
+acc_043,Company 043,HealthTech,PL,1-10,owner_01,2024-02-17
+acc_044,Company 044,Logistics,UK,1-10,owner_02,2023-07-16
+acc_045,Company 045,FinTech,SE,11-50,owner_04,2023-07-07
+acc_046,Company 046,eCommerce,SE,11-50,owner_01,2024-03-29
+acc_047,Company 047,HR Tech,PL,1-10,owner_01,2023-04-06
+acc_048,Company 048,HR Tech,DE,11-50,owner_04,2024-05-12
+acc_049,Company 049,HealthTech,DE,201-500,owner_01,2023-06-18
+acc_050,Company 050,HealthTech,PL,201-500,owner_03,2024-04-10
+acc_051,Company 051,eCommerce,CZ,501+,owner_04,2023-06-08
+acc_052,Company 052,FinTech,NL,11-50,owner_01,2023-03-04
+acc_053,Company 053,Logistics,UK,1-10,owner_01,2024-05-03
+acc_054,Company 054,EdTech,PL,1-10,owner_01,2023-07-10
+acc_055,Company 055,SaaS,PL,11-50,owner_04,2023-05-03
+acc_056,Company 056,EdTech,DE,501+,owner_01,2023-03-25
+acc_057,Company 057,HealthTech,UK,51-200,owner_02,2023-11-18
+acc_058,Company 058,FinTech,NL,201-500,owner_02,2023-11-04
+acc_059,Company 059,HealthTech,UK,1-10,owner_01,2024-04-14
+acc_060,Company 060,EdTech,PL,1-10,owner_02,2024-06-02
+acc_061,Company 061,eCommerce,PL,51-200,owner_01,2023-09-08
+acc_062,Company 062,eCommerce,NL,11-50,owner_04,2023-11-06
+acc_063,Company 063,EdTech,PL,501+,owner_03,2023-04-17
+acc_064,Company 064,FinTech,NL,1-10,owner_01,2023-06-09
+acc_065,Company 065,eCommerce,NL,501+,owner_02,2023-12-18
+acc_066,Company 066,FinTech,NL,501+,owner_04,2023-09-15
+acc_067,Company 067,HR Tech,PL,1-10,owner_04,2023-10-11
+acc_068,Company 068,SaaS,PL,51-200,owner_02,2023-09-26
+acc_069,Company 069,FinTech,SE,501+,owner_04,2023-01-10
+acc_070,Company 070,SaaS,PL,11-50,owner_01,2024-01-14
+acc_071,Company 071,EdTech,PL,201-500,owner_02,2023-02-12
+acc_072,Company 072,eCommerce,UK,1-10,owner_03,2023-08-04
+acc_073,Company 073,Logistics,DE,1-10,owner_03,2024-02-21
+acc_074,Company 074,EdTech,PL,11-50,owner_02,2023-07-01
+acc_075,Company 075,HealthTech,PL,11-50,owner_03,2024-02-26
+acc_076,Company 076,HR Tech,DE,51-200,owner_02,2023-04-21
+acc_077,Company 077,HealthTech,PL,201-500,owner_02,2023-07-24
+acc_078,Company 078,HR Tech,SE,51-200,owner_03,2023-08-22
+acc_079,Company 079,FinTech,PL,11-50,owner_04,2023-12-03
+acc_080,Company 080,eCommerce,PL,51-200,owner_03,2024-06-05
+acc_081,Company 081,HealthTech,UK,1-10,owner_01,2023-09-25
+acc_082,Company 082,FinTech,NL,1-10,owner_01,2024-03-20
+acc_083,Company 083,eCommerce,UK,201-500,owner_01,2024-01-30
+acc_084,Company 084,EdTech,DE,51-200,owner_01,2024-03-22
+acc_085,Company 085,SaaS,DE,51-200,owner_04,2023-03-13
+acc_086,Company 086,Logistics,UK,501+,owner_03,2023-05-08
+acc_087,Company 087,Logistics,NL,501+,owner_03,2024-02-23
+acc_088,Company 088,eCommerce,CZ,51-200,owner_02,2023-07-16
+acc_089,Company 089,HealthTech,CZ,11-50,owner_03,2024-02-20
+acc_090,Company 090,EdTech,PL,51-200,owner_03,2023-08-04
+acc_091,Company 091,HealthTech,UK,201-500,owner_04,2024-03-28
+acc_092,Company 092,Logistics,DE,501+,owner_04,2023-06-23
+acc_093,Company 093,Logistics,PL,51-200,owner_03,2023-04-06
+acc_094,Company 094,HR Tech,DE,51-200,owner_02,2023-07-23
+acc_095,Company 095,FinTech,PL,1-10,owner_02,2024-05-01
+acc_096,Company 096,EdTech,PL,201-500,owner_04,2023-07-19
+acc_097,Company 097,Logistics,CZ,201-500,owner_04,2023-09-07
+acc_098,Company 098,FinTech,PL,1-10,owner_04,2023-08-13
+acc_099,Company 099,FinTech,SE,1-10,owner_02,2023-05-05
+acc_100,Company 100,HealthTech,PL,201-500,owner_03,2024-03-29

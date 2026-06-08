@@ -1,0 +1,42 @@
+name: gtm_revenue_analytics
+version: '1.0.0'
+config-version: 2
+
+profile: gtm_revenue_analytics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+
+models:
+  gtm_revenue_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: table
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  gtm_revenue_analytics:
+    +schema: raw
+    accounts:
+      +column_types:
+        account_id: varchar
+        created_at: varchar
+    subscriptions:
+      +column_types:
+        subscription_id: varchar
+        started_at: varchar
+        updated_at: varchar
+    subscription_events:
+      +column_types:
+        event_id: varchar
+        old_mrr: integer
+        new_mrr: integer
+        effective_date: varchar

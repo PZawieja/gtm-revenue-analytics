@@ -1,0 +1,87 @@
+version: 2
+
+models:
+  - name: stg_accounts
+    description: >
+      One row per B2B account. Represents the CRM dimension — the company
+      that holds one or more subscriptions. Maps to Salesforce Account.
+    columns:
+      - name: account_id
+        description: Surrogate key for the account.
+        tests:
+          - unique
+          - not_null
+      - name: country
+        description: ISO 3166-1 alpha-2 country code.
+      - name: company_size_band
+        description: Headcount band at time of account creation.
+
+  - name: stg_subscriptions
+    description: >
+      Current subscription state per account — one row per subscription.
+      This is a snapshot, not history. Use stg_subscription_events for
+      change history and MRR calculations.
+    columns:
+      - name: subscription_id
+        tests:
+          - unique
+          - not_null
+      - name: account_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_accounts')
+                field: account_id
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['active', 'cancelled']
+      - name: mrr
+        description: Current monthly recurring revenue in USD. Zero when cancelled.
+
+  - name: stg_subscription_events
+    description: >
+      Immutable event log of all subscription lifecycle changes.
+      This is the canonical source for MRR calculations — every revenue
+      motion is an event. Maps to Chargebee subscription event webhooks.
+
+      Event types:
+        subscription_created   — first payment, revenue motion = new_business
+        subscription_changed   — plan change; movement direction inferred from old vs new MRR
+        subscription_cancelled — churn; MRR goes to zero
+        subscription_reactivated — returning customer; revenue motion = reactivation
+    columns:
+      - name: event_id
+        tests:
+          - unique
+          - not_null
+      - name: subscription_id
+        tests:
+          - not_null
+      - name: account_id
+        tests:
+          - not_null
+      - name: event_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - subscription_created
+                  - subscription_changed
+                  - subscription_cancelled
+                  - subscription_reactivated
+      - name: old_mrr
+        description: MRR before the event. Zero for new subscriptions.
+        tests:
+          - not_null
+      - name: new_mrr
+        description: MRR after the event. Zero for cancellations.
+        tests:
+          - not_null
+      - name: effective_month
+        description: First day of the month the change took effect.
+        tests:
+          - not_null

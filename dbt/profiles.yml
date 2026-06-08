@@ -1,0 +1,7 @@
+gtm_revenue_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../gtm_revenue.duckdb"
+      threads: 4

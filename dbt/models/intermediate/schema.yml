@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: int_mrr_movements
+    description: >
+      One row per subscription event, enriched with movement_type and mrr_delta.
+      This is the single source of truth for all revenue motion analysis.
+      All MRR/ARR/NRR mart models are built on top of this table.
+    columns:
+      - name: event_id
+        tests:
+          - unique
+          - not_null
+      - name: movement_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - new_business
+                  - expansion
+                  - contraction
+                  - churn
+                  - reactivation
+      - name: mrr_delta
+        description: >
+          Signed delta: positive for new_business/expansion/reactivation,
+          negative for contraction/churn.
+
+  - name: int_customer_cohorts
+    description: >
+      One row per subscription. Records the cohort month (first payment)
+      and the starting MRR for NRR cohort analysis.
+    columns:
+      - name: subscription_id
+        tests:
+          - unique
+          - not_null
+      - name: cohort_month
+        description: First day of the month the subscription first paid. Never changes.
+        tests:
+          - not_null

@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: fct_mrr
+    description: >
+      Monthly MRR waterfall — one row per movement_type per month.
+      The primary model for understanding revenue growth and composition.
+      Verified invariant: sum(mrr_delta) for all rows through any given month
+      equals ending MRR for that month.
+    columns:
+      - name: effective_month
+        tests:
+          - not_null
+      - name: movement_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - new_business
+                  - expansion
+                  - contraction
+                  - churn
+                  - reactivation
+
+  - name: fct_nrr
+    description: >
+      Net Revenue Retention by cohort month. One row per cohort.
+      NRR measures how well the business retains and grows revenue from
+      existing customers over a 12-month window.
+
+      A healthy B2B SaaS business typically shows NRR > 100%, meaning
+      expansion from existing customers more than offsets churn.
+    columns:
+      - name: cohort_month
+        tests:
+          - unique
+          - not_null
+      - name: nrr_pct
+        description: >
+          NRR as a percentage. 100 = flat retention. >100 = net expansion.
+          Formula: (starting_mrr + expansion - contraction - churn + reactivation)
+          / starting_mrr * 100
+      - name: grr_pct
+        description: >
+          Gross Revenue Retention — NRR excluding expansion.
+          Formula: (starting_mrr - churn) / starting_mrr * 100
+          GRR is always ≤ NRR and caps at 100%.
+
+  - name: dim_customer
+    description: >
+      Current-state customer dimension. One row per account.
+      Combines CRM attributes, current subscription state, and cohort info.
+      Designed for BI tools and dashboard filters.
+    columns:
+      - name: account_id
+        tests:
+          - unique
+          - not_null
+
+  - name: rpt_arr_bridge
+    description: >
+      ARR bridge in board reporting format. One row per month.
+      Decomposes ARR change into five revenue motions:
+      new business, expansion, contraction, churn, reactivation.
+      Suitable for waterfall chart visualization.
+
+      Verified invariant: ending_arr = beginning_arr + net_arr_change
+    columns:
+      - name: effective_month
+        tests:
+          - unique
+          - not_null
