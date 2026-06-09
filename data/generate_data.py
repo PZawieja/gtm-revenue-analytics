@@ -175,7 +175,9 @@ def generate_events(accounts: list[dict]) -> tuple[list[dict], list[dict]]:
                 # else: no change this month
 
             elif current_status == "cancelled":
-                # Reactivation: 8% chance per month after churn, only if churned ≥1 month ago
+                # Reactivation: 8% chance per month, but only after ≥1 month cooling-off period.
+                # The 1-month minimum prevents same-month churn+reactivation in the generator
+                # (which is a valid real-world scenario, but keeping it clean for demo purposes).
                 months_since_churn = months_between(last_cancelled_month, cursor)
                 if months_since_churn >= 1 and random.random() < 0.08:
                     plan = random.choice(PLANS)

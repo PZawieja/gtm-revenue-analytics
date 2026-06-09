@@ -51,6 +51,8 @@ with cohorts as (
         on  m.subscription_id = c.subscription_id
         and m.effective_month >  c.cohort_month
         and m.effective_month <= c.cohort_month + interval '12 months'
+        -- Cohorts < 12 months old will show partial-period NRR (fewer movements included).
+        -- Filter to cohort_month <= max_month - 12 if you want only fully-matured cohorts.
     group by 1, 2, 3
 )
 

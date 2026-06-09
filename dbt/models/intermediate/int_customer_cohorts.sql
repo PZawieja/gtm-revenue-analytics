@@ -7,6 +7,10 @@
 
   One row per subscription. Cohort never changes — it is the
   first effective_month of the subscription_created event.
+
+  Scope assumption: one subscription per account. In a production system
+  with multiple subscriptions per account, cohort would be assigned at the
+  account level (earliest subscription_created across all subs).
 */
 with first_payments as (
     select

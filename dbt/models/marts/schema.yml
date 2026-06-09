@@ -58,6 +58,30 @@ models:
           - unique
           - not_null
 
+  - name: fct_churn
+    description: >
+      One row per churn event. Designed for survival analysis and
+      time-to-churn distributions. Joins churn events to cohort data
+      to show how long customers lasted before churning.
+
+      Note: a subscription that churns and reactivates appears once here
+      (for the churn). Use int_mrr_movements for the full lifecycle.
+    columns:
+      - name: subscription_id
+        tests:
+          - not_null
+      - name: churn_month
+        tests:
+          - not_null
+      - name: mrr_lost
+        description: Absolute MRR value lost at churn. Always positive.
+        tests:
+          - not_null
+      - name: months_to_churn
+        description: Months from cohort_month to churn_month. Zero = churned in first month.
+      - name: tenure_bucket
+        description: Grouped tenure band — 0–3, 4–6, 7–12, 12+ months.
+
   - name: rpt_arr_bridge
     description: >
       ARR bridge in board reporting format. One row per month.

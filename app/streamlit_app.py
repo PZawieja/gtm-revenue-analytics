@@ -116,6 +116,54 @@ def load_customers():
     """).df()
 
 
+@st.cache_data
+def load_churn():
+    con = get_connection()
+    return con.execute("""
+        select subscription_id, account_id, cohort_month, churn_month,
+               months_to_churn, mrr_lost, tenure_bucket
+        from main_marts.fct_churn
+        order by churn_month
+    """).df()
+
+
+@st.cache_data
+def load_cohort_heatmap():
+    con = get_connection()
+    return con.execute("""
+        with cohorts as (
+            select subscription_id, cohort_month, starting_mrr
+            from main_intermediate.int_customer_cohorts
+        )
+        , movements as (
+            select subscription_id, effective_month, mrr_delta
+            from main_intermediate.int_mrr_movements
+        )
+        , monthly_cohort_mrr as (
+            select
+                c.cohort_month
+                , datediff('month', c.cohort_month, m.effective_month) as months_since_start
+                , sum(c.starting_mrr) as cohort_starting_mrr
+                , sum(c.starting_mrr)
+                  + sum(sum(m.mrr_delta)) over (
+                      partition by c.cohort_month
+                      order by datediff('month', c.cohort_month, m.effective_month)
+                      rows between unbounded preceding and current row
+                  ) as cohort_retained_mrr
+            from cohorts c
+            join movements m on m.subscription_id = c.subscription_id
+            where datediff('month', c.cohort_month, m.effective_month) between 0 and 12
+            group by 1, 2
+        )
+        select
+            cohort_month
+            , months_since_start
+            , round(cohort_retained_mrr / nullif(cohort_starting_mrr, 0) * 100, 1) as retention_pct
+        from monthly_cohort_mrr
+        order by cohort_month, months_since_start
+    """).df()
+
+
 def fmt_currency(v: float, unit: str = "MRR") -> str:
     if abs(v) >= 1_000_000:
         return f"${v/1_000_000:.1f}M"
@@ -133,6 +181,8 @@ mrr_df = load_mrr_waterfall()
 arr_df = load_arr_bridge()
 nrr_df = load_nrr()
 customers_df = load_customers()
+churn_df = load_churn()
+heatmap_df = load_cohort_heatmap()
 
 # ── Derived summary metrics ────────────────────────────────────────────────────
 latest_month = mrr_df["effective_month"].max()
@@ -362,6 +412,125 @@ with col_right:
     summary["Retained MRR"] = summary["Retained MRR"].apply(lambda x: f"${x:,.0f}")
     summary["NRR %"] = summary["NRR %"].apply(lambda x: f"{x:.1f}%")
     st.dataframe(summary, use_container_width=True, hide_index=True, height=340)
+
+# ── Cohort Retention Heatmap ───────────────────────────────────────────────────
+st.markdown("---")
+st.markdown('<p class="section-label">// cohort retention heatmap</p>', unsafe_allow_html=True)
+st.subheader("MRR Retention by Cohort × Month Age")
+st.caption(
+    "Each cell shows % of cohort starting MRR retained at month N. "
+    "100% = flat retention. >100% = expansion. Red = churn eroded the cohort."
+)
+
+heatmap_df["cohort_month"] = pd.to_datetime(heatmap_df["cohort_month"])
+heatmap_df["cohort_label"] = heatmap_df["cohort_month"].dt.strftime("%b %Y")
+
+heatmap_pivot = heatmap_df.pivot_table(
+    index="cohort_label", columns="months_since_start",
+    values="retention_pct", aggfunc="first"
+)
+heatmap_pivot = heatmap_pivot.reindex(
+    heatmap_df.sort_values("cohort_month")["cohort_label"].unique()
+)
+
+fig_heat = go.Figure(go.Heatmap(
+    z=heatmap_pivot.values,
+    x=[f"M+{int(c)}" for c in heatmap_pivot.columns],
+    y=heatmap_pivot.index.tolist(),
+    colorscale=[
+        [0.0,  RED],
+        [0.5,  SURFACE],
+        [0.85, GOLD],
+        [1.0,  GREEN],
+    ],
+    zmid=100,
+    text=[[f"{v:.0f}%" if not pd.isna(v) else "" for v in row]
+          for row in heatmap_pivot.values],
+    texttemplate="%{text}",
+    textfont=dict(size=10, color=GOLD_LIGHT),
+    colorbar=dict(
+        title="Retention %",
+        tickfont=dict(color=MUTED),
+        titlefont=dict(color=MUTED),
+        bgcolor=SURFACE,
+        bordercolor=BORDER,
+    ),
+))
+fig_heat.update_layout(
+    paper_bgcolor=BG,
+    plot_bgcolor=BG,
+    font=dict(color=MUTED, size=11),
+    margin=dict(t=20, b=60, l=80, r=20),
+    height=420,
+    xaxis=dict(tickfont=dict(color=MUTED), title="Months Since First Payment"),
+    yaxis=dict(tickfont=dict(color=MUTED), title="Cohort"),
+)
+st.plotly_chart(fig_heat, use_container_width=True)
+
+# ── Churn Analysis ─────────────────────────────────────────────────────────────
+st.markdown("---")
+st.markdown('<p class="section-label">// churn analysis</p>', unsafe_allow_html=True)
+st.subheader("Churn by Tenure Bucket")
+st.caption(
+    "When do customers churn? Customers who churn early (0–3 months) signal "
+    "onboarding or product-fit problems. Late churn (12+ months) often means "
+    "budget cuts or competitive displacement."
+)
+
+churn_df["churn_month"] = pd.to_datetime(churn_df["churn_month"])
+
+col_churn_left, col_churn_right = st.columns([2, 1])
+
+with col_churn_left:
+    churn_bucket = (
+        churn_df.groupby("tenure_bucket")
+        .agg(churns=("subscription_id", "count"), mrr_lost=("mrr_lost", "sum"))
+        .reset_index()
+    )
+    bucket_order = ["0–3 months", "4–6 months", "7–12 months", "12+ months"]
+    churn_bucket["tenure_bucket"] = pd.Categorical(
+        churn_bucket["tenure_bucket"], categories=bucket_order, ordered=True
+    )
+    churn_bucket = churn_bucket.sort_values("tenure_bucket")
+
+    fig_churn = go.Figure()
+    fig_churn.add_trace(go.Bar(
+        x=churn_bucket["tenure_bucket"],
+        y=churn_bucket["mrr_lost"],
+        marker_color=[GREEN, GOLD, ORANGE, RED][:len(churn_bucket)],
+        text=churn_bucket["churns"].apply(lambda x: f"{x} subs"),
+        textposition="outside",
+        textfont=dict(color=MUTED, size=12),
+    ))
+    fig_churn.update_layout(
+        paper_bgcolor=BG, plot_bgcolor=BG,
+        font=dict(color=MUTED, size=12),
+        margin=dict(t=20, b=40, l=60, r=20),
+        height=320,
+        xaxis=dict(title="Tenure at Churn", gridcolor=BORDER, tickfont=dict(color=MUTED)),
+        yaxis=dict(title="MRR Lost ($)", gridcolor=BORDER, tickfont=dict(color=MUTED)),
+        showlegend=False,
+    )
+    st.plotly_chart(fig_churn, use_container_width=True)
+
+with col_churn_right:
+    total_churns = len(churn_df)
+    total_mrr_lost = churn_df["mrr_lost"].sum()
+    avg_months = churn_df["months_to_churn"].mean()
+    median_mrr = churn_df["mrr_lost"].median()
+
+    for label, value in [
+        ("Total Churn Events", str(total_churns)),
+        ("Total MRR Lost", f"${total_mrr_lost:,.0f}"),
+        ("Avg Months to Churn", f"{avg_months:.1f}"),
+        ("Median MRR per Churn", f"${median_mrr:,.0f}"),
+    ]:
+        st.markdown(f"""
+        <div class="metric-card" style="margin-bottom:0.6rem">
+          <div class="metric-value" style="font-size:1.4rem">{value}</div>
+          <div class="metric-label">{label}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 # ── Customer breakdown ─────────────────────────────────────────────────────────
 st.markdown("---")
