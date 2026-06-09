@@ -196,11 +196,11 @@ def nrr_cohorts():
         **LAYOUT_BASE,
         title=dict(text="Net Revenue Retention by Cohort (T+12)", font=dict(color=GOLD_LIGHT, size=16)),
         height=460,
-        margin=dict(t=50, b=100, l=70, r=30),
         legend=dict(bgcolor=SURFACE, bordercolor=BORDER, borderwidth=1),
         xaxis=dict(gridcolor=BORDER, tickfont=dict(color=MUTED), tickangle=-45),
         yaxis=dict(title="Retention (%)", gridcolor=BORDER, tickfont=dict(color=MUTED)),
     )
+    fig.update_layout(margin=dict(t=50, b=100, l=70, r=30))
     save(fig, "nrr_cohorts")
 
 
@@ -241,8 +241,8 @@ def customer_mix():
         **LAYOUT_BASE,
         title=dict(text=f"Active Customer Mix ({len(df)} accounts)", font=dict(color=GOLD_LIGHT, size=16)),
         height=400,
-        margin=dict(t=60, b=20, l=20, r=20),
     )
+    fig.update_layout(margin=dict(t=60, b=20, l=20, r=20))
     for ann in fig.layout.annotations:
         ann.font.color = GOLD_LIGHT
         ann.font.size = 13
