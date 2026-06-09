@@ -449,9 +449,8 @@ fig_heat = go.Figure(go.Heatmap(
     texttemplate="%{text}",
     textfont=dict(size=10, color=GOLD_LIGHT),
     colorbar=dict(
-        title="Retention %",
+        title=dict(text="Retention %", font=dict(color=MUTED)),
         tickfont=dict(color=MUTED),
-        titlefont=dict(color=MUTED),
         bgcolor=SURFACE,
         bordercolor=BORDER,
     ),
